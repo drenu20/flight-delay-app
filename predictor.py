@@ -1,12 +1,23 @@
 """Prediction logic (kept separate from the UI so it can be tested on its own)."""
+from pathlib import Path
+
 import joblib
 import pandas as pd
 
-BUNDLE_PATH = "model/flight_delay_bundle.joblib"
+BASE_DIR = Path(__file__).resolve().parent          # folder that contains app.py
 
 
-def load_bundle(path=BUNDLE_PATH):
-    return joblib.load(path)
+def find_file(name):
+    """Find a data/model file anywhere in the repo (works with or without model/ and data/ folders)."""
+    hits = sorted(x for x in BASE_DIR.rglob(name) if x.is_file() and ".git" not in x.parts)
+    if not hits:
+        found = sorted(str(x.relative_to(BASE_DIR)) for x in BASE_DIR.rglob("*") if x.is_file() and ".git" not in x.parts)
+        raise FileNotFoundError(f"'{name}' not found. Files in the repo: {found}")
+    return hits[0]
+
+
+def load_bundle():
+    return joblib.load(find_file("flight_delay_bundle.joblib"))
 
 
 def build_features(bundle, *, airline_code, origin, dest, date, dep_time, arr_time,

@@ -3,7 +3,7 @@ import datetime as dt
 import pandas as pd
 import streamlit as st
 
-from predictor import load_bundle, predict
+from predictor import find_file, load_bundle, predict
 
 st.set_page_config(page_title="Flight Delay Predictor", page_icon="✈️", layout="centered")
 
@@ -15,9 +15,9 @@ def get_bundle():
 
 @st.cache_data
 def get_tables():
-    airlines = pd.read_csv("data/airlines.csv")
-    airports = pd.read_csv("data/airports.csv").sort_values("code")
-    routes = pd.read_csv("data/routes.csv").set_index("route")
+    airlines = pd.read_csv(find_file("airlines.csv"))
+    airports = pd.read_csv(find_file("airports.csv")).sort_values("code")
+    routes = pd.read_csv(find_file("routes.csv")).set_index("route")
     return airlines, airports, routes
 
 
